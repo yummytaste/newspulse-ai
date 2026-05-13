@@ -1,0 +1,34 @@
+name: Auto News Shorts
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */3 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+          pip install cloudinary
+
+      - name: Create Firebase service key
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > backend/serviceAccountKey.json
+
+      - name: Run auto news generator
+        run: |
+          cd backend
+          python main.py
